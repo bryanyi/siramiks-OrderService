@@ -33,7 +33,7 @@ spring:
           lob:
             non_contextual_creation: true
   application:
-    name: ORDER_SERVICE
+    name: ORDER-SERVICE
 
 eureka:
   instance:
