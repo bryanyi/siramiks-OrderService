@@ -109,7 +109,7 @@ public class OrderService implements OrderServiceInterface {
 
     // update order's payment status
     log.info("Updating order in order DB to reflect successful payment...");
-    Order fetchedOrder = orderRepository.findByOrderId(orderId)
+    Order fetchedOrder = orderRepository.findByOrderId(order.getOrderId())
             .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + orderId));
 
     fetchedOrder.setPaymentStatus("SUCCESS");
