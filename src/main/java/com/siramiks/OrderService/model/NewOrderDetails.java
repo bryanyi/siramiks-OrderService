@@ -1,4 +1,4 @@
-package com.siramiks.OrderService.entity;
+package com.siramiks.OrderService.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderRequest {
+public class NewOrderDetails {
   private List<UUID> productIds;
   private long orderPrice;
   private long orderQuantity;

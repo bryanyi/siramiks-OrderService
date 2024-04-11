@@ -51,6 +51,9 @@ public class Order {
   @Column(name = "payment_method")
   private String paymentMethod;
 
+  @Column(name = "payment_status")
+  private String paymentStatus;
+
   /* will be automatically invoked by the JPA provider before the entity is persisted */
   @PrePersist
   protected void onCreate() {
