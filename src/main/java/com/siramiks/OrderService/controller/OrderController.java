@@ -32,6 +32,6 @@ public class OrderController {
               .build();
       return new ResponseEntity<>(paymentFailedResponse, HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(orderResponse, HttpStatus.ACCEPTED);
+    return new ResponseEntity<>(orderResponse, HttpStatus.OK);
   }
 }
