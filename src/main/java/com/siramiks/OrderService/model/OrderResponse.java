@@ -11,7 +11,7 @@ import java.util.UUID;
 public class OrderResponse {
   private UUID orderId;
   private List<UUID> productIds;
-  private long orderPrice;
+  private double orderPrice;
   private long orderQuantity;
   private String paymentMethod;
 }

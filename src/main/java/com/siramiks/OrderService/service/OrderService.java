@@ -84,7 +84,7 @@ public class OrderService implements OrderServiceInterface {
     log.info("Processing payment...");
     // process payment if in stock
     StripePaymentRequest stripePaymentRequest = StripePaymentRequest.builder()
-            .amount((long) order.getOrderPrice())
+            .amount(order.getOrderPrice())
             .paymentMethodId(order.getPaymentMethod())
             .build();
     PaymentRequest paymentRequest = PaymentRequest.builder()
@@ -130,7 +130,6 @@ public class OrderService implements OrderServiceInterface {
 
     log.info("Updating product complete!");
 
-    log.info("Sending Order Response to client");
     // Finally, return the order response to the client
     OrderResponse orderResponse = OrderResponse.builder()
             .orderId(order.getOrderId())
@@ -139,6 +138,7 @@ public class OrderService implements OrderServiceInterface {
             .orderQuantity(order.getOrderQuantity())
             .paymentMethod(order.getPaymentMethod())
             .build();
+    log.info("Order successfully completed!");
 
     return orderResponse;
   }

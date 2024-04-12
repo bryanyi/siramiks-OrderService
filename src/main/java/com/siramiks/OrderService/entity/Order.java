@@ -43,7 +43,7 @@ public class Order {
   private LocalDateTime createdAt;
 
   @Column(name = "order_total_price")
-  private long orderPrice;
+  private double orderPrice;
 
   @Column(name = "order_total_quantity")
   private long orderQuantity;
