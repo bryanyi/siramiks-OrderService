@@ -14,4 +14,5 @@ public class OrderResponse {
   private double orderPrice;
   private long orderQuantity;
   private String paymentMethod;
+  private boolean enoughStock;
 }

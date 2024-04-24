@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(
         value = "/api/v1/order",
@@ -21,6 +23,12 @@ public class OrderController {
 
   @Autowired
   private OrderService orderService;
+
+  @GetMapping("/getOrderDetails/{orderId}")
+  public ResponseEntity<OrderResponse> getOrderDetails(@PathVariable("orderId") String orderId) {
+    OrderResponse orderResponse = orderService.getOrderDetails(orderId);
+    return new ResponseEntity<>(orderResponse, HttpStatus.OK);
+  }
 
   @PostMapping("/createOrder")
   public ResponseEntity<Object> createOrder(@RequestBody OrderRequest orderRequest) {

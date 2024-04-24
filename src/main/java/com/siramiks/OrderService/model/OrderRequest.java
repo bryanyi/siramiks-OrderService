@@ -14,6 +14,4 @@ import lombok.NoArgsConstructor;
 public class OrderRequest {
   private NewOrderDetails newOrderDetails;
   private CardInfo cardInfo;
-//  private StripeTokenDto stripeToken;
-//  private StripeChargeDto stripeCharge;
 }

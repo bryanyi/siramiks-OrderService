@@ -80,6 +80,39 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.0.2</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.github.tomakehurst</groupId>-->
+<!--			<artifactId>wiremock-jre8</artifactId>-->
+<!--			<version>2.35.1</version>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>3.3.1</version>
+      <scope>test</scope>
+    </dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>9.4.31.v20200723</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

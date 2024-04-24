@@ -2,6 +2,7 @@ package com.siramiks.OrderService.service;
 
 import com.siramiks.OrderService.entity.Order;
 import com.siramiks.OrderService.entity.CardInfo;
+import com.siramiks.OrderService.exception.CustomException;
 import com.siramiks.OrderService.feign.PaymentResponse.PaymentResponse;
 import com.siramiks.OrderService.feign.Stripe.StripePaymentRequest;
 import com.siramiks.OrderService.model.NewOrderDetails;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @Log4j2
-public class OrderService implements OrderServiceInterface {
+public class OrderService {
 
   @Autowired
   private OrderRepository orderRepository;
@@ -31,6 +32,21 @@ public class OrderService implements OrderServiceInterface {
   private ProductService productService;
   @Autowired
   private PaymentService paymentService;
+
+  public OrderResponse getOrderDetails(String orderId) {
+    Order order = orderRepository.findByOrderId(UUID.fromString(orderId))
+            .orElseThrow(() -> new CustomException("Order not found", "NO_FOUND", 404));
+
+    OrderResponse orderResponse = OrderResponse.builder()
+            .orderId(order.getOrderId())
+            .productIds(order.getProduct_id())
+            .orderPrice(order.getOrderPrice())
+            .orderQuantity(order.getOrderQuantity())
+            .paymentMethod(order.getPaymentMethod())
+            .build();
+
+    return orderResponse;
+  }
 
   public OrderResponse createOrder(OrderRequest orderRequest) {
     // REMEMBER - when testing this, do NOT use the id key from DB - use product_id!
@@ -64,21 +80,33 @@ public class OrderService implements OrderServiceInterface {
 
     // check stock from product service
     log.info("Checking if product is in stock in product service");
-    boolean productsInOrderHasEnoughStock = true;
     int productCount = order.getProduct_id().size();
-    for (int i = 0; i < productCount; i++) {
-      UUID productId = order.getProduct_id().get(i);
-      ResponseEntity<Boolean> inStockResponse = productService.hasEnoughStock(productId, order.getOrderQuantity());
-      boolean inStock = inStockResponse.getBody();
-      if (!inStock) {
-        log.info("Product not in stock!");
-        productsInOrderHasEnoughStock = false;
-        break;
+
+    try {
+      for (int i = 0; i < productCount; i++) {
+        UUID productId = order.getProduct_id().get(i);
+        ResponseEntity<Boolean> inStockResponse = productService.hasEnoughStock(productId, order.getOrderQuantity());
+
+        boolean inStock = false;
+        if (inStockResponse != null && inStockResponse.getBody() != null) {
+          inStock = inStockResponse.getBody();
+        } else {
+          return OrderResponse.builder()
+                  .enoughStock(false)
+                  .build();
+        }
+        if (!inStock) {
+          log.info("Product not in stock!");
+          return OrderResponse.builder()
+                  .enoughStock(false)
+                  .build();
+        }
       }
+
+    } catch (Exception e) {
+
     }
 
-    // TODO - find a more elegant way to error handle. Should return some type of object to the client
-    if (!productsInOrderHasEnoughStock) return null;
 
     log.info("Product in stock!");
     log.info("Processing payment...");
@@ -97,13 +125,18 @@ public class OrderService implements OrderServiceInterface {
     // call payment microservice
     log.info("Attempting to initiate transaction in product service...");
     ResponseEntity<PaymentResponse> paymentResponse = paymentService.completeTransaction(paymentRequest);
-    String paymentStatus = paymentResponse.getBody().getPaymentStatus();
+    String paymentStatus = "";
+    if (paymentResponse != null) {
+      paymentStatus = paymentResponse.getBody().getPaymentStatus();
+    } else {
+      throw new CustomException("Payment Service error!", "SERVICE_ERROR", 500);
+    }
 
     log.info("Payment status received...");
 
     if (!paymentStatus.equals("SUCCESS")) {
       log.info("Payment failed!");
-      return null;
+      throw new CustomException("Payment failed!", "PAYMENT_FAILED", 200);
     }
     log.info("Payment SUCCESSFULL!");
 
@@ -113,8 +146,9 @@ public class OrderService implements OrderServiceInterface {
             .orElseThrow(() -> new IllegalArgumentException("Order not found with ID: " + orderId));
 
     fetchedOrder.setPaymentStatus("SUCCESS");
-    orderRepository.save(fetchedOrder);
+    order = orderRepository.save(fetchedOrder);
     log.info("Updated order's payment status successfully!");
+    log.info("FINAL ORDER OBJECT: {}", order);
 
     // Decrease quantity in product database
     log.info("Updating product's quantity in product service...");
@@ -137,6 +171,7 @@ public class OrderService implements OrderServiceInterface {
             .orderPrice(order.getOrderPrice())
             .orderQuantity(order.getOrderQuantity())
             .paymentMethod(order.getPaymentMethod())
+            .enoughStock(true)
             .build();
     log.info("Order successfully completed!");
 
