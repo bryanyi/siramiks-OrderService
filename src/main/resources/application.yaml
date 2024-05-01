@@ -19,6 +19,8 @@ supabase:
     password: ${SUPABASE_DATABASE_PASSWORD}
 
 spring:
+  zipkin:
+    base-url: ${ZIPKIN_SERVER_ADDRESS:http://zipkin:9411}
   datasource:
     url: ${SUPABASE_DATABASE_URL}
     username: ${SUPABASE_DATABASE_USER}
